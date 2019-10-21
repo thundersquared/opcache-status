@@ -15,6 +15,7 @@ class OpCacheDataModel
 
     public function __construct()
     {
+        $this->handleActions();
         $this->_configuration = opcache_get_configuration();
         $this->_status = opcache_get_status();
     }
@@ -229,6 +230,23 @@ class OpCacheDataModel
         return $this->_d3Scripts;
     }
 
+    public function handleActions()
+    {
+        if (isset($_POST['action']) && !empty($_POST['action']))
+        {
+            $action = $_POST['action'];
+            call_user_func(array($this, $action . 'Action'));
+        }
+    }
+
+    public function flushAction()
+    {
+        if (function_exists('opcache_reset'))
+        {
+            opcache_reset();
+        }
+    }
+
     private function _processPartition($value, $name = null)
     {
         if (array_key_exists('size', $value)) {
@@ -285,6 +303,7 @@ class OpCacheDataModel
 }
 
 $dataModel = new OpCacheDataModel();
+
 ?>
 <!DOCTYPE html>
 <meta charset="utf-8">
@@ -522,6 +541,28 @@ $dataModel = new OpCacheDataModel();
                 <input type="radio" id="tab-visualise" name="tab-group-1">
                 <label for="tab-visualise">Visualise Partition</label>
                 <div class="content"></div>
+            </div>
+
+            <div class="tab">
+                <input type="radio" id="tab-utilities" name="tab-group-1">
+                <label for="tab-utilities">Utilities</label>
+                <div class="content">
+                    <table>
+                        <tr>
+                            <th width="70%">Utility</th>
+                            <th width="30%"></th>
+                        </tr>
+                        <tr>
+                            <th>Flush cache</td>
+                            <td>
+                                <form method="POST">
+                                    <input type="hidden" name="action" value="flush" />
+                                    <input type="submit" />
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
 
         </div>
